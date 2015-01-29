@@ -56,7 +56,7 @@ class MongonautViewMixin(object):
         """ Returns a list of all mongonautadmin implementations for the site """
         apps = []
         for app_name in settings.INSTALLED_APPS:
-            mongonautadmin = "{0}.mongonautadmin".format(app_name)
+            mongonautadmin = "{0}.mongonaut_admin".format(app_name)
             try:
                 module = import_module(mongonautadmin)
             except ImportError as e:
