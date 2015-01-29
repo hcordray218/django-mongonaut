@@ -34,8 +34,8 @@
     <thead>
         <tr>
             {% if request.user.is_superuser %}<th><input type="checkbox" name="check_all" /></th>{% endif %}
-            {% for key in keys %}
-                <th>{{ key }}</th>
+            {% for display_key in display_keys %}
+                <th>{{ display_key }}</th>
             {% endfor %}
         </tr>
     </thead>

@@ -239,7 +239,7 @@ class MongoModelFormBaseMixin(object):
             new_key = make_key(new_key_array)
 
             if key_array_digit is not None and len(new_key_array) > 0:
-                # Handleing list fields
+                # Handling list fields
                 if len(new_key_array) == 1:
                     return_data = document._data.get(current_key, [])
                 elif isinstance(document, BaseList):
