@@ -62,11 +62,11 @@
 <div class="pagination">
   <ul>
         {% if has_previous_page %}
-            <li class="prev"><a href="?page={{ previous_page_number }}">&larr; Previous</a></li>
+            <li class="prev"><a href="?{% if search_query %}q={{search_query}}&{% endif %}page={{ previous_page_number }}">&larr; Previous</a></li>
         {% endif %}
         <li class="active"><a href="#">{{ page }} of {{ total_pages }}</a></li>
         {% if has_next_page %}
-            <li class="next"><a href="?page={{ next_page_number }}">Next &rarr;</a></li>
+            <li class="next"><a href="?{% if search_query %}q={{search_query}}&{% endif %}page={{ next_page_number }}">Next &rarr;</a></li>
         {% endif %}
   </ul>
 </div>

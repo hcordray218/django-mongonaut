@@ -3,6 +3,8 @@
 TODO move permission checks to the dispatch view thingee
 """
 
+import math
+
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.forms import Form
@@ -96,7 +98,7 @@ class DocumentListView(MongonautViewMixin, FormView):
             self.page = 1
 
         obj_count = queryset.count()
-        self.total_pages = obj_count / self.documents_per_page + (1 if obj_count % self.documents_per_page else 0)
+        self.total_pages = int(math.ceil(obj_count / self.documents_per_page + (1 if obj_count % self.documents_per_page else 0)))
 
         if self.page < 1:
             self.page = 1
@@ -149,6 +151,7 @@ class DocumentListView(MongonautViewMixin, FormView):
         context['next_page_number'] = next_page_number
         context['has_next_page'] = next_page_number is not None
         context['total_pages'] = self.total_pages
+        context['search_query'] = self.request.GET.get('q', None)
 
         # Part of upcoming list view form functionality
         if self.queryset.count():
