@@ -155,47 +155,9 @@ class DocumentListView(MongonautViewMixin, FormView):
 
         # Part of upcoming list view form functionality
         if self.queryset.count():
-            context['keys'] = ['id', ]
-            context['display_keys'] = ['id', ]
-
-            display_keys = []
-            keys = []
-
-            for list_field in self.mongonautadmin.list_fields:
-                if isinstance(list_field, tuple):
-                    print('is tuple')
-                    if len(list_field) != 2 and len(list_field) > 0:
-                        key = list_field[0]
-                        if key in self.document._fields.keys():
-                            keys.append(key)
-                            display_keys.append(key)
-                    else:
-                        if list_field[0] in self.document._fields.keys():
-                            key = list_field[0]
-                            display_key = list_field[1]
-                            keys.append(key)
-                            display_keys.append(display_key)
-                        elif list_field[1] in self.document._fields.keys():
-                            key = list_field[1]
-                            display_key = list_field[0]
-                            keys.append(key)
-                            display_keys.append(display_key)
-                else:
-                    if list_field in self.document._fields.keys():
-                        keys.append(list_field)
-                        display_keys.append(list_field)
-
-            # Show those items for which we've got list_fields on the mongonautadmin
-            for index in range(len(keys)):
-
-                # TODO - Figure out why this EmbeddedDocumentField and ListField breaks this view
-                # Note - This is the challenge part, right? :)
-                if isinstance(self.document._fields[keys[index]], EmbeddedDocumentField):
-                    continue
-                if isinstance(self.document._fields[keys[index]], ListField):
-                    continue
-                context['keys'].append(keys[index])
-                context['display_keys'].append(display_keys[index])
+            keys, display_keys = self.get_valid_keys_for_document(self.mongonautadmin.list_fields)
+            context['keys'] = keys
+            context['display_keys'] = display_keys
 
         if self.mongonautadmin.search_fields:
             context['search_field'] = True
@@ -232,19 +194,15 @@ class DocumentDetailView(MongonautViewMixin, TemplateView):
         context['document'] = self.document
         context['app_label'] = self.app_label
         context['document_name'] = self.document_name
-        context['keys'] = ['id', ]
-        context['embedded_documents'] = []
-        context['list_fields'] = []
-        for key in sorted([x for x in self.document._fields.keys() if x != 'id']):
-            # TODO - Figure out why this EmbeddedDocumentField and ListField breaks this view
-            # Note - This is the challenge part, right? :)
-            if isinstance(self.document._fields[key], EmbeddedDocumentField):
-                context['embedded_documents'].append(key)
-                continue
-            if isinstance(self.document._fields[key], ListField):
-                context['list_fields'].append(key)
-                continue
-            context['keys'].append(key)
+
+        fields = self.mongonautadmin.fields if self.mongonautadmin.fields else self.document._fields.keys()
+        (keys, display_keys,
+         embedded_keys, embedded_display_keys,
+         list_keys, list_display_keys) = self.get_valid_keys_for_document(fields, include_embedded_and_list=True)
+        context['keys'] = zip(keys, display_keys)
+        context['embedded_keys'] = zip(embedded_keys, embedded_display_keys)
+        context['list_keys'] = zip(list_keys, list_display_keys)
+
         return context
 
 

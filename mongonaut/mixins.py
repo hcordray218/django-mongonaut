@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.utils.importlib import import_module
-from mongoengine.fields import EmbeddedDocumentField
+from mongoengine.fields import EmbeddedDocumentField, ListField
 
 from mongonaut.exceptions import NoMongonautAdminSpecified
 from mongonaut.forms import MongoModelForm
@@ -112,6 +112,67 @@ class MongonautViewMixin(object):
         context['has_add_permission'] = self.mongonautadmin.has_add_permission(self.request)
         context['has_delete_permission'] = self.mongonautadmin.has_delete_permission(self.request)
         return context
+
+    def get_valid_keys_for_document(self, fields, include_embedded_and_list=False):
+        display_keys = []
+        keys = []
+
+        exclude = self.mongonautadmin.exclude or []
+
+        for field in fields:
+            if isinstance(field, tuple):
+                if len(field) != 2 and len(field) > 0:
+                    key = field[0]
+                    if key in self.document._fields.keys() and key not in exclude:
+                        keys.append(key)
+                        display_keys.append(key)
+                else:
+                    if field[0] in self.document._fields.keys() and key not in exclude:
+                        key = field[0]
+                        display_key = field[1]
+                        keys.append(key)
+                        display_keys.append(display_key)
+                    elif field[1] in self.document._fields.keys() and key not in exclude:
+                        key = field[1]
+                        display_key = field[0]
+                        keys.append(key)
+                        display_keys.append(display_key)
+            else:
+                if field in self.document._fields.keys():
+                    keys.append(field)
+                    display_keys.append(field)
+
+        final_keys = []
+        final_display_keys = []
+        final_embedded_keys = []
+        final_embedded_display_keys = []
+        final_list_keys = []
+        final_list_display_keys = []
+        # Show those items for which we've got list_fields on the mongonautadmin
+        for index in range(len(keys)):
+
+            # TODO - Figure out why this EmbeddedDocumentField and ListField breaks this view
+            # Note - This is the challenge part, right? :)
+            if isinstance(self.document._fields[keys[index]],
+                          EmbeddedDocumentField):
+                if include_embedded_and_list:
+                    final_embedded_keys.append(keys[index])
+                    final_embedded_display_keys.append(display_keys[index])
+                else:
+                    continue
+            if isinstance(self.document._fields[keys[index]],
+                          ListField):
+                if include_embedded_and_list:
+                    final_list_keys.append(keys[index])
+                    final_list_display_keys.append(display_keys[index])
+                else:
+                    continue
+            final_keys.append(keys[index])
+            final_display_keys.append(display_keys[index])
+
+        return (final_keys, final_display_keys,
+                final_embedded_keys, final_embedded_display_keys,
+                final_list_keys, final_list_display_keys)
 
 
 class MongonautFormViewMixin(object):
