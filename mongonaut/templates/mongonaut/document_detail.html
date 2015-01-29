@@ -45,15 +45,15 @@
             <tbody>            
             {% for key in keys %}
                 <tr>
-                    <td>{{ key}}</td>
-                    <td>{% get_document_value document key %}</td>                    
+                    <td>{{ key.1 }}</td>
+                    <td>{% get_document_value document key.0 %}</td>
                 </tr>
             {% endfor %}
             </tbody>            
         </table>
     </div>
     <div class="span6">
-            {% if list_fields %}
+            {% if list_keys %}
                 <table class="table table-bordered table-striped">
                     <caption>List Fields</caption>
                     <thead>
@@ -63,16 +63,16 @@
                         </tr>
                     </thead>
                     <tbody>            
-                    {% for key in list_fields %}
+                    {% for key in list_keys %}
                         <tr>
-                            <td>{{ key}}</td>
-                            <td>{% get_document_value document key %}</td>                    
+                            <td>{{ key.1 }}</td>
+                            <td>{% get_document_value document key.0 %}</td>
                         </tr>
                     {% endfor %}
                     </tbody>            
                 </table>
             {% endif %}
-            {% if embedded_documents %}
+            {% if embedded_keys %}
                 <table class="table table-bordered table-striped">
                     <caption>Embedded Documents</caption>
                     <thead>
@@ -82,10 +82,10 @@
                         </tr>
                     </thead>
                     <tbody>            
-                    {% for key in embedded_documents %}
+                    {% for key in embedded_keys %}
                         <tr>
-                            <td>{{ key}}</td>
-                            <td>{% get_document_value document key %}</td>                    
+                            <td>{{ key.1 }}</td>
+                            <td>{% get_document_value document key.0 %}</td>
                         </tr>
                     {% endfor %}
                     </tbody>            

@@ -127,12 +127,12 @@ class MongonautViewMixin(object):
                         keys.append(key)
                         display_keys.append(key)
                 else:
-                    if field[0] in self.document._fields.keys() and key not in exclude:
+                    if field[0] in self.document._fields.keys() and field[0] not in exclude:
                         key = field[0]
                         display_key = field[1]
                         keys.append(key)
                         display_keys.append(display_key)
-                    elif field[1] in self.document._fields.keys() and key not in exclude:
+                    elif field[1] in self.document._fields.keys() and field[1] not in exclude:
                         key = field[1]
                         display_key = field[0]
                         keys.append(key)
@@ -160,15 +160,17 @@ class MongonautViewMixin(object):
                     final_embedded_display_keys.append(display_keys[index])
                 else:
                     continue
-            if isinstance(self.document._fields[keys[index]],
+            elif isinstance(self.document._fields[keys[index]],
                           ListField):
                 if include_embedded_and_list:
                     final_list_keys.append(keys[index])
                     final_list_display_keys.append(display_keys[index])
                 else:
                     continue
-            final_keys.append(keys[index])
-            final_display_keys.append(display_keys[index])
+
+            else:
+                final_keys.append(keys[index])
+                final_display_keys.append(display_keys[index])
 
         return (final_keys, final_display_keys,
                 final_embedded_keys, final_embedded_display_keys,
