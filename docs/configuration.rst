@@ -7,21 +7,21 @@ One of the most useful parts of `django.contrib.admin` is the ability to configu
 Basic Pattern
 ==============
 
-In your app, create a module called 'mongoadmin.py'. It has to be called that or django-mongonaut will not be able to find it. Then, in your new mongonaut file, simply import the mongoengine powered models you want mongonaut to touch, then import the MongoAdmin class, instantiate it, and finally attach it to your model.
+In your app, create a module called 'mongonaut_admin.py'. It has to be called that or django-mongonaut will not be able to find it. Then, in your new mongonaut file, simply import the mongoengine powered models you want mongonaut to touch, then import the MongoAdmin class, instantiate it, and finally attach it to your model.
 
 .. sourcecode:: python
 
-    # myapp/mongoadmin.py
+    # myapp/mongonaut_admin.py
 
     # Import the MongoAdmin base class
-    from mongonaut.sites import MongoAdmin
+    from mongonaut.sites import MongonautAdmin
 
     # Import your custom models
     from blog.models import Post
     
     # Instantiate the MongoAdmin class        
     # Then attach the mongoadmin to your model
-    Post.mongoadmin = MongoAdmin()
+    Post.mongonautadmin = MongonautAdmin()
     
 That's it! Now you can view, add, edit, and delete your MongoDB models!
 
