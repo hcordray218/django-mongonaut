@@ -27,7 +27,7 @@ class IndexView(MongonautViewMixin, ListView):
     permission = 'has_view_permission'
 
     def get_queryset(self):
-        return self.get_mongoadmins()
+        return self.get_mongonautadmins()
 
 
 class AppListView(MongonautViewMixin, ListView):
@@ -49,14 +49,14 @@ class DocumentListView(MongonautViewMixin, FormView):
     documents_per_page = 25
 
     #def dispatch(self, *args, **kwargs):
-    #    self.set_mongoadmin()
+    #    self.set_mongonautadmin()
     #    self.set_permissions()
     #    return super(DocumentListView, self).dispatch(*args, **kwargs)
 
     def get_qset(self, queryset, q):
-        if self.mongoadmin.search_fields and q:
+        if self.mongonautadmin.search_fields and q:
             params = {}
-            for field in self.mongoadmin.search_fields:
+            for field in self.mongonautadmin.search_fields:
                 if field == 'id':
                     # check to make sure this is a valid ID, otherwise we just continue
                     if is_valid_object_id(q):
@@ -73,12 +73,12 @@ class DocumentListView(MongonautViewMixin, FormView):
             return self.queryset
 
         self.set_mongonaut_base()
-        self.set_mongoadmin()
+        self.set_mongonautadmin()
         self.document = getattr(self.models, self.document_name)
         queryset = self.document.objects.all()
 
-        if self.mongoadmin.ordering:
-            queryset = queryset.order_by(*self.mongoadmin.ordering)
+        if self.mongonautadmin.ordering:
+            queryset = queryset.order_by(*self.mongonautadmin.ordering)
 
         # search. move this to get_queryset
         # search. move this to get_queryset
@@ -154,8 +154,8 @@ class DocumentListView(MongonautViewMixin, FormView):
         if self.queryset.count():
             context['keys'] = ['id', ]
 
-            # Show those items for which we've got list_fields on the mongoadmin
-            for key in [x for x in self.mongoadmin.list_fields if x != 'id' and x in self.document._fields.keys()]:
+            # Show those items for which we've got list_fields on the mongonautadmin
+            for key in [x for x in self.mongonautadmin.list_fields if x != 'id' and x in self.document._fields.keys()]:
 
                 # TODO - Figure out why this EmbeddedDocumentField and ListField breaks this view
                 # Note - This is the challenge part, right? :)
@@ -165,7 +165,7 @@ class DocumentListView(MongonautViewMixin, FormView):
                     continue
                 context['keys'].append(key)
 
-        if self.mongoadmin.search_fields:
+        if self.mongonautadmin.search_fields:
             context['search_field'] = True
 
         return context
@@ -191,7 +191,7 @@ class DocumentDetailView(MongonautViewMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
-        self.set_mongoadmin()
+        self.set_mongonautadmin()
         context = self.set_permissions_in_context(context)
         self.document_type = getattr(self.models, self.document_name)
         self.ident = self.kwargs.get('id')
@@ -230,7 +230,7 @@ class DocumentEditFormView(MongonautViewMixin, FormView, MongonautFormViewMixin)
 
     def get_context_data(self, **kwargs):
         context = super(DocumentEditFormView, self).get_context_data(**kwargs)
-        self.set_mongoadmin()
+        self.set_mongonautadmin()
         context = self.set_permissions_in_context(context)
         self.document_type = getattr(self.models, self.document_name)
         self.ident = self.kwargs.get('id')
@@ -246,7 +246,7 @@ class DocumentEditFormView(MongonautViewMixin, FormView, MongonautFormViewMixin)
         return context
 
     def get_form(self, Form):
-        self.set_mongoadmin()
+        self.set_mongonautadmin()
         context = self.set_permissions_in_context({})
 
         if not context['has_edit_permission']:
@@ -285,7 +285,7 @@ class DocumentAddFormView(MongonautViewMixin, FormView, MongonautFormViewMixin):
             self.document = self.document_type.objects.get(pk=self.ident)
         """
         context = super(DocumentAddFormView, self).get_context_data(**kwargs)
-        self.set_mongoadmin()
+        self.set_mongonautadmin()
         context = self.set_permissions_in_context(context)
         self.document_type = getattr(self.models, self.document_name)
 
@@ -323,7 +323,7 @@ class DocumentDeleteView(DeletionMixin, MongonautViewMixin, TemplateView):
         return reverse('document_list', kwargs={'app_label': self.app_label, 'document_name': self.document_name})
 
     def get_object(self):
-        self.set_mongoadmin()
+        self.set_mongonautadmin()
         self.document_type = getattr(self.models, self.document_name)
         self.ident = self.kwargs.get('id')
         self.document = self.document_type.objects.get(pk=self.ident)

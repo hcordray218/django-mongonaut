@@ -6,7 +6,7 @@ from django.http import HttpResponseForbidden
 from django.utils.importlib import import_module
 from mongoengine.fields import EmbeddedDocumentField
 
-from mongonaut.exceptions import NoMongoAdminSpecified
+from mongonaut.exceptions import NoMongonautAdminSpecified
 from mongonaut.forms import MongoModelForm
 from mongonaut.forms.form_utils import has_digit
 from mongonaut.forms.form_utils import make_key
@@ -20,7 +20,7 @@ class AppStore(object):
         self.models = []
         for key in module.__dict__.keys():
             model_candidate = getattr(module, key)
-            if hasattr(model_candidate, 'mongoadmin'):
+            if hasattr(model_candidate, 'mongonautadmin'):
                 self.add_model(model_candidate)
 
     def add_model(self, model):
@@ -52,13 +52,13 @@ class MongonautViewMixin(object):
                                                        "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js")
         return context
 
-    def get_mongoadmins(self):
-        """ Returns a list of all mongoadmin implementations for the site """
+    def get_mongonautadmins(self):
+        """ Returns a list of all mongonautadmin implementations for the site """
         apps = []
         for app_name in settings.INSTALLED_APPS:
-            mongoadmin = "{0}.mongoadmin".format(app_name)
+            mongonautadmin = "{0}.mongonautadmin".format(app_name)
             try:
-                module = import_module(mongoadmin)
+                module = import_module(mongonautadmin)
             except ImportError as e:
                 if str(e).startswith("No module named"):
                     continue
@@ -86,31 +86,31 @@ class MongonautViewMixin(object):
         self.model_name = "{0}.{1}".format(self.app_label, self.models_name)
         self.models = import_module(self.model_name)
 
-    def set_mongoadmin(self):
-        """ Returns the MongoAdmin object for an app_label/document_name style view
+    def set_mongonautadmin(self):
+        """ Returns the MongonautAdmin object for an app_label/document_name style view
         """
-        if hasattr(self, "mongoadmin"):
+        if hasattr(self, "mongonautadmin"):
             return None
 
         if not hasattr(self, "document_name"):
             self.set_mongonaut_base()
 
-        for mongoadmin in self.get_mongoadmins():
-            for model in mongoadmin['obj'].models:
+        for mongonautadmin in self.get_mongonautadmins():
+            for model in mongonautadmin['obj'].models:
                 if model.name == self.document_name:
-                    self.mongoadmin = model.mongoadmin
+                    self.mongonautadmin = model.mongonautadmin
                     break
         # TODO change this to use 'finally' or 'else' or something
-        if not hasattr(self, "mongoadmin"):
-            raise NoMongoAdminSpecified("No MongoAdmin for {0}.{1}".format(self.app_label, self.document_name))
+        if not hasattr(self, "mongonautadmin"):
+            raise NoMongonautAdminSpecified("No MongonautAdmin for {0}.{1}".format(self.app_label, self.document_name))
 
     def set_permissions_in_context(self, context={}):
-        """ Provides permissions for mongoadmin for use in the context"""
+        """ Provides permissions for mongonautadmin for use in the context"""
 
-        context['has_view_permission'] = self.mongoadmin.has_view_permission(self.request)
-        context['has_edit_permission'] = self.mongoadmin.has_edit_permission(self.request)
-        context['has_add_permission'] = self.mongoadmin.has_add_permission(self.request)
-        context['has_delete_permission'] = self.mongoadmin.has_delete_permission(self.request)
+        context['has_view_permission'] = self.mongonautadmin.has_view_permission(self.request)
+        context['has_edit_permission'] = self.mongonautadmin.has_edit_permission(self.request)
+        context['has_add_permission'] = self.mongonautadmin.has_add_permission(self.request)
+        context['has_delete_permission'] = self.mongonautadmin.has_delete_permission(self.request)
         return context
 
 

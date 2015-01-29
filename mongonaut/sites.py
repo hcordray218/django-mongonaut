@@ -4,7 +4,7 @@ except ImportError:
     from django import forms
 
 
-class BaseMongoAdmin(object):
+class BaseMongonautAdmin(object):
 
     search_fields = []
 
@@ -53,7 +53,7 @@ class BaseMongoAdmin(object):
         return request.user.is_authenticated() and request.user.is_active and request.user.is_superuser
 
 
-class MongoAdmin(BaseMongoAdmin):
+class MongonautAdmin(BaseMongonautAdmin):
 
     list_display = ('__str__',)
     list_display_links = ()
