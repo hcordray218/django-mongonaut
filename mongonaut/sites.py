@@ -21,8 +21,8 @@ class BaseMongonautAdmin(object):
     # shows up on a particular field
     field_actions = {}
 
-    fields = None
-    exclude = None
+    fields = []
+    exclude = []
     fieldsets = None
     form = forms.ModelForm
     filter_vertical = ()

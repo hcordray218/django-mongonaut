@@ -117,22 +117,20 @@ class MongonautViewMixin(object):
         display_keys = []
         keys = []
 
-        exclude = self.mongonautadmin.exclude or []
-
         for field in fields:
             if isinstance(field, tuple):
                 if len(field) != 2 and len(field) > 0:
                     key = field[0]
-                    if key in self.document._fields.keys() and key not in exclude:
+                    if key in self.document._fields.keys() and key not in self.mongonautadmin.exclude:
                         keys.append(key)
                         display_keys.append(key)
                 else:
-                    if field[0] in self.document._fields.keys() and field[0] not in exclude:
+                    if field[0] in self.document._fields.keys() and field[0] not in self.mongonautadmin.exclude:
                         key = field[0]
                         display_key = field[1]
                         keys.append(key)
                         display_keys.append(display_key)
-                    elif field[1] in self.document._fields.keys() and field[1] not in exclude:
+                    elif field[1] in self.document._fields.keys() and field[1] not in self.mongonautadmin.exclude:
                         key = field[1]
                         display_key = field[0]
                         keys.append(key)

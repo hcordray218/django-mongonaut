@@ -29,6 +29,7 @@
     <form action="" method="post">
     {% csrf_token %}
     {% include "mongonaut/actions/action_buttons.html" %}
+    {% include "mongonaut/includes/_delete_list_warning.html" %}
 {% endif %}
     <table class="table table-bordered table-striped">
     <thead>

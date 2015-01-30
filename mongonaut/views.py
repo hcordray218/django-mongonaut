@@ -155,9 +155,9 @@ class DocumentListView(MongonautViewMixin, FormView):
 
         # Part of upcoming list view form functionality
         if self.queryset.count():
-            keys, display_keys = self.get_valid_keys_for_document(self.mongonautadmin.list_fields)
-            context['keys'] = keys
-            context['display_keys'] = display_keys
+            keys, display_keys, _, _, _, _ = self.get_valid_keys_for_document(self.mongonautadmin.list_fields)
+            context['keys'] = ['id'] + keys
+            context['display_keys'] = ['id'] + display_keys
 
         if self.mongonautadmin.search_fields:
             context['search_field'] = True
